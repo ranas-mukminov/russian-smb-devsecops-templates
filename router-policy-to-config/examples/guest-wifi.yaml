@@ -1,0 +1,70 @@
+meta:
+  name: guest-wifi-router
+  description: Router with main LAN and isolated guest WiFi network
+  target:
+    vendor: routeros
+    version: v7
+
+wan:
+  type: dhcp
+  interface: ether1
+
+lans:
+  - name: main
+    subnet: 192.168.10.0/24
+    gateway: 192.168.10.1
+    dhcp:
+      enabled: true
+      range: 192.168.10.100-192.168.10.200
+
+  - name: guest
+    subnet: 192.168.20.0/24
+    gateway: 192.168.20.1
+    dhcp:
+      enabled: true
+      range: 192.168.20.50-192.168.20.150
+      lease_time: 2h
+    isolated_from:
+      - main
+
+wifi:
+  - name: main-wifi
+    lan: main
+    ssid: "MyHome"
+    mode: ap
+    band: 5ghz
+    security:
+      encryption: wpa2-psk
+      password_ref: "secret:wifi_main_password"
+
+  - name: guest-wifi
+    lan: guest
+    ssid: "MyHome-Guest"
+    mode: ap
+    band: 2.4ghz
+    guest: true
+    security:
+      encryption: wpa2-psk
+      password_ref: "secret:wifi_guest_password"
+
+firewall:
+  default_policy: drop
+  rules:
+    - name: allow_lan_to_internet
+      from: [main]
+      to: [wan]
+      action: accept
+
+    - name: allow_guest_to_internet
+      from: [guest]
+      to: [wan]
+      action: accept
+
+    - name: block_guest_to_main
+      from: [guest]
+      to: [main]
+      action: drop
+      comment: "Isolate guest from main LAN"
+
+nat:
+  masquerade: true
