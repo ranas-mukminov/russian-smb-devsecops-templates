@@ -1,0 +1,11 @@
+filebeat.inputs:
+  - type: filestream
+    id: bitrix-php
+    paths:
+      - /var/log/bitrix/*.log
+    fields:
+      service: bitrix
+      env: dev
+
+output.logstash:
+  hosts: ["logstash:5044"]

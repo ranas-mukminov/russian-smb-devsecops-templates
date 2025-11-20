@@ -1,0 +1,12 @@
+# Парсинг OpenVPN/WireGuard логов. Извлекаем пользователя/peer, IP, событие.
+- regex:
+    expression: "(?P<datetime>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\s+(?P<level>[A-Z]+)\s+(?P<component>[^:]+):\s+(?P<message>.*?(?:peer|client) (?P<peer>[^ ]+).*)"
+- labels:
+    level: '{{ .level }}'
+    peer: '{{ .peer }}'
+    service: vpn
+- timestamp:
+    source: datetime
+    format: "2006-01-02 15:04:05"
+- output:
+    source: message

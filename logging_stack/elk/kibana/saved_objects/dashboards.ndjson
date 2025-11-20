@@ -1,0 +1,2 @@
+{"type":"dashboard","id":"russian-smb-overview","attributes":{"title":"Обзор логов (SMB)","description":"Ошибки, авторизации, VPN","timeRestore":false,"panelsJSON":"[]"}}
+{"type":"dashboard","id":"nginx-http-errors","attributes":{"title":"Ошибки nginx","description":"4xx/5xx, топ URI и IP","timeRestore":false,"panelsJSON":"[]"}}

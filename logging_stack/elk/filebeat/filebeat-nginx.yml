@@ -1,0 +1,11 @@
+filebeat.inputs:
+  - type: filestream
+    id: nginx-access
+    paths:
+      - /var/log/nginx/*.log
+    fields:
+      service: nginx
+      env: dev
+
+output.logstash:
+  hosts: ["logstash:5044"]

@@ -1,0 +1,38 @@
+{
+  "title": "Обзор логирования (SMB)",
+  "uid": "russian-smb-overview",
+  "schemaVersion": 39,
+  "version": 1,
+  "tags": ["smb", "logging", "russian"],
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Всего логов за 5м",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate({service=~\".+\"}[5m]))"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "graph",
+      "title": "Ошибки 5xx/4xx",
+      "targets": [
+        {"refId": "A", "expr": "sum(rate({status=~\"5..\"}[5m]))"},
+        {"refId": "B", "expr": "sum(rate({status=~\"4..\"}[5m]))"}
+      ],
+      "legend": {"show": true}
+    },
+    {
+      "id": 3,
+      "type": "table",
+      "title": "Топ сервисов по логам",
+      "targets": [
+        {"refId": "A", "expr": "sum by(service)(rate({service=~\".+\"}[5m]))"}
+      ]
+    }
+  ]
+}

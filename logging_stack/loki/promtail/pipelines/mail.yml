@@ -1,0 +1,12 @@
+# Парсинг Postfix/Exim логов. Извлекаем queue id, отправителя, получателя, статус.
+- regex:
+    expression: "^(?P<month>[A-Z][a-z]{2})\s+(?P<day>\d{1,2})\s+(?P<time>\d{2}:\d{2}:\d{2})\s+(?P<host>[^ ]+)\s+postfix/(?:smtp|qmgr)\[(?P<pid>\d+)\]:\s+(?P<queue_id>[A-F0-9]+):\s+from=<(?P<from>[^>]*)>,\s+to=<(?P<to>[^>]*)>,\s+relay=(?P<relay>[^,]*),\s+dsn=(?P<dsn>[^,]*),\s+status=(?P<status_word>[^ ]+).*$"
+- labels:
+    mail_status: '{{ .status_word }}'
+    sender: '{{ .from }}'
+    recipient: '{{ .to }}'
+    service: mail
+- template:
+    source: host
+    template: '{{ .host | ToLower }}'
+    dest: host_normalized

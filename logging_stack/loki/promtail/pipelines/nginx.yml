@@ -1,0 +1,14 @@
+# Парсинг access/error логов nginx. Извлекаем статус, метод, URI, клиентский IP, время ответа.
+- regex:
+    expression: "(?P<remote_addr>[^ ]*) - (?P<remote_user>[^ ]*) \[(?P<time_local>[^\]]+)\] \"(?P<request>[^\"]*)\" (?P<status>\d{3}) (?P<body_bytes_sent>\d+) \"(?P<http_referer>[^\"]*)\" \"(?P<http_user_agent>[^\"]*)\" (?P<request_time>[0-9.]+)"
+- labels:
+    status: '{{ .status }}'
+    user_ip: '{{ .remote_addr }}'
+- timestamp:
+    source: time_local
+    format: "02/Jan/2006:15:04:05 -0700"
+- template:
+    source: request
+    template: '{{ if .request }}{{ .request | ToLower }}{{ end }}'
+    dest: request_normalized
+- labeldrop: ["filename"]

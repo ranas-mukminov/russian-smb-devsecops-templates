@@ -1,0 +1,17 @@
+stages:
+  - deps
+
+dependency_scan:
+  stage: deps
+  image: python:3.11
+  script:
+    - pip install pip-audit || true
+    - if [ -f requirements.txt ]; then pip-audit -r requirements.txt || true; fi
+  artifacts:
+    when: always
+    expire_in: 1 week
+    paths:
+      - audit.json
+  only:
+    - branches
+    - merge_requests

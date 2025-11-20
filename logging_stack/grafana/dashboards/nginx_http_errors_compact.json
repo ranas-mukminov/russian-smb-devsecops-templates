@@ -1,0 +1,42 @@
+{
+  "title": "nginx HTTP ошибки (компакт)",
+  "uid": "nginx-http-errors",
+  "schemaVersion": 39,
+  "version": 1,
+  "tags": ["nginx", "errors"],
+  "panels": [
+    {
+      "id": 10,
+      "type": "graph",
+      "title": "5xx/4xx по времени",
+      "targets": [
+        {"refId": "A", "expr": "sum by(instance)(rate({job=\"nginx\",status=~\"5..\"}[5m]))"},
+        {"refId": "B", "expr": "sum by(instance)(rate({job=\"nginx\",status=~\"4..\"}[5m]))"}
+      ]
+    },
+    {
+      "id": 11,
+      "type": "table",
+      "title": "Top URI",
+      "targets": [
+        {"refId": "A", "expr": "topk(10, sum by (request_normalized)(rate({job=\"nginx\"}[5m])))"}
+      ]
+    },
+    {
+      "id": 12,
+      "type": "table",
+      "title": "Top IP",
+      "targets": [
+        {"refId": "A", "expr": "topk(10, sum by (user_ip)(rate({job=\"nginx\"}[5m])))"}
+      ]
+    },
+    {
+      "id": 13,
+      "type": "stat",
+      "title": "Средняя latency",
+      "targets": [
+        {"refId": "A", "expr": "avg_over_time({job=\"nginx\"} | unwrap request_time [5m])"}
+      ]
+    }
+  ]
+}

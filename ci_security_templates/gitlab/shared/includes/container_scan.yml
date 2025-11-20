@@ -1,0 +1,16 @@
+stages:
+  - container_scan
+
+container_scan:
+  stage: container_scan
+  image:
+    name: aquasec/trivy:latest
+    entrypoint: [""]
+  variables:
+    TRIVY_CACHE_DIR: "/tmp/trivy-cache"
+  script:
+    - trivy image --download-db-only --no-progress
+    - trivy image --exit-code 0 --format table "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" || true
+  only:
+    - branches
+    - merge_requests

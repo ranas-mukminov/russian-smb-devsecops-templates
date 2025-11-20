@@ -1,0 +1,33 @@
+{
+  "title": "Ошибки авторизации и VPN",
+  "uid": "auth-failures-security",
+  "schemaVersion": 39,
+  "version": 1,
+  "tags": ["security", "auth"],
+  "panels": [
+    {
+      "id": 20,
+      "type": "graph",
+      "title": "Брутфорс веб/почта",
+      "targets": [
+        {"refId": "A", "expr": "sum(rate({service=~\"web|mail\",level=~\"WARN|ERROR\"}[5m]))"}
+      ]
+    },
+    {
+      "id": 21,
+      "type": "graph",
+      "title": "Падения VPN сессий",
+      "targets": [
+        {"refId": "A", "expr": "sum(rate({service=\"vpn\",level=~\"WARN|ERROR\"}[5m]))"}
+      ]
+    },
+    {
+      "id": 22,
+      "type": "table",
+      "title": "Подозрительные IP",
+      "targets": [
+        {"refId": "A", "expr": "topk(15, sum by(user_ip)(rate({service=~\"web|mail\",status=~\"4..|5..\"}[10m])))"}
+      ]
+    }
+  ]
+}

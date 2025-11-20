@@ -1,0 +1,41 @@
+groups:
+  - name: russian-smb-alerts
+    rules:
+      - alert: HighHttp5xxRate
+        expr: sum(rate({job="nginx",status=~"5.."}[5m])) > 10
+        for: 5m
+        labels:
+          severity: critical
+          service: web
+        annotations:
+          summary: "Рост 5xx по nginx"
+          description: "Количество 5xx превышает 10 за 5 минут. Проверьте доступность сайта/бекенда."
+
+      - alert: AuthFailuresBurst
+        expr: sum(rate({service=~"web|mail|vpn", level=~"WARN|ERROR"}[5m])) > 20
+        for: 5m
+        labels:
+          severity: high
+          category: security
+        annotations:
+          summary: "Много ошибок авторизации"
+          description: "Количество ошибок авторизации за 5мин превышает порог. Возможен брутфорс."
+
+      - alert: OneCUnavailable
+        expr: sum(rate({service="onec", level=~"ERROR|FATAL"}[5m])) > 0
+        for: 10m
+        labels:
+          severity: critical
+          service: onec
+        annotations:
+          summary: "Ошибки 1С"
+          description: "Поток ошибок 1С в последних логах. Проверьте сервисы и лицензии."
+
+      - alert: VpnSessionFlaps
+        expr: sum(rate({service="vpn", level=~"WARN|ERROR"}[10m])) > 5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Пересоздание VPN-сессий"
+          description: "Фиксируется частое переподключение VPN клиентов. Проверьте сеть/клиентов."

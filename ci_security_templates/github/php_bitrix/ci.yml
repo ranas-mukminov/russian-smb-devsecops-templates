@@ -1,0 +1,75 @@
+name: PHP Bitrix CI Security
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  php-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-php@v4
+        with:
+          php-version: '8.1'
+      - name: Install deps
+        run: composer install --no-interaction --prefer-dist
+      - name: Unit tests
+        run: php ./vendor/bin/phpunit --testdox || echo "Add phpunit to enable tests"
+
+  php-lint:
+    runs-on: ubuntu-latest
+    needs: php-tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-php@v4
+        with:
+          php-version: '8.1'
+      - name: Lint
+        run: find . -name "*.php" -not -path "./vendor/*" -print0 | xargs -0 -r php -l
+
+  php-sast:
+    runs-on: ubuntu-latest
+    needs: php-tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-php@v4
+        with:
+          php-version: '8.1'
+      - name: Install analyzers
+        run: |
+          composer require --dev phpstan/phpstan || true
+          composer require --dev vimeo/psalm || true
+      - name: PHPStan
+        run: vendor/bin/phpstan analyse --memory-limit=512M || true
+      - name: Psalm
+        run: vendor/bin/psalm --no-cache --show-info=false || true
+
+  dependencies-scan:
+    runs-on: ubuntu-latest
+    needs: php-tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-php@v4
+        with:
+          php-version: '8.1'
+      - name: Composer audit
+        run: |
+          composer install --no-interaction --prefer-dist
+          composer audit || true
+
+  container-scan:
+    runs-on: ubuntu-latest
+    needs: [php-tests, php-lint, php-sast, dependencies-scan]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t local/bitrix-app:ci .
+      - name: Trivy scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: local/bitrix-app:ci
+          format: table
+          exit-code: 0

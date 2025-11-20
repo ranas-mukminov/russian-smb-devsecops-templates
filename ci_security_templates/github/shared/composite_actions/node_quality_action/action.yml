@@ -1,0 +1,22 @@
+name: "Node Quality"
+description: "Install deps, run tests and eslint"
+inputs:
+  node-version:
+    description: "Node version"
+    required: false
+    default: "18"
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+    - name: Install deps
+      run: npm ci
+      shell: bash
+    - name: Tests
+      run: npm test -- --runInBand
+      shell: bash
+    - name: ESLint
+      run: npx eslint .
+      shell: bash

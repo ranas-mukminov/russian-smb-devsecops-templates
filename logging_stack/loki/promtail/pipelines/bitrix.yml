@@ -1,0 +1,12 @@
+# Парсинг логов Bitrix/PHP-FPM. Извлекаем уровень, сообщение, скрипт, IP.
+- regex:
+    expression: "\[(?P<datetime>[^\]]+)\] \[(?P<level>[A-Z]+)\] pid (?P<pid>\d+): (?P<message>.*?)(?: client: (?P<client_ip>[0-9.]+))?"
+- labels:
+    level: '{{ .level }}'
+    user_ip: '{{ .client_ip | default "unknown" }}'
+    service: bitrix
+- timestamp:
+    source: datetime
+    format: "2006/01/02 15:04:05"
+- output:
+    source: message

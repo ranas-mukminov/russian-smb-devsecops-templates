@@ -1,0 +1,19 @@
+stages:
+  - sast
+
+variables:
+  SECURE_LOG_LEVEL: "info"
+
+sast:
+  stage: sast
+  image: python:3.11
+  script:
+    - pip install bandit || true
+    - bandit -q -r . || true
+  artifacts:
+    when: always
+    paths:
+      - bandit.log
+  only:
+    - branches
+    - merge_requests

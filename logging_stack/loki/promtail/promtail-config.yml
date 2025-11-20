@@ -1,0 +1,67 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+positions:
+  filename: /tmp/positions.yaml
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+scrape_configs:
+  - job_name: nginx
+    static_configs:
+      - targets: ["localhost"]
+        labels:
+          job: nginx
+          app: nginx
+          service: web
+          env: dev
+          __path__: /var/log/nginx/*.log
+    pipeline_stages:
+      - include: /etc/promtail/pipelines/nginx.yml
+
+  - job_name: bitrix
+    static_configs:
+      - targets: ["localhost"]
+        labels:
+          job: bitrix
+          app: php-fpm
+          service: bitrix
+          env: dev
+          __path__: /var/log/bitrix/*.log
+    pipeline_stages:
+      - include: /etc/promtail/pipelines/bitrix.yml
+
+  - job_name: onec
+    static_configs:
+      - targets: ["localhost"]
+        labels:
+          job: onec
+          app: 1c
+          service: accounting
+          env: dev
+          __path__: /var/log/onec/*.log
+    pipeline_stages:
+      - include: /etc/promtail/pipelines/onec.yml
+
+  - job_name: mail
+    static_configs:
+      - targets: ["localhost"]
+        labels:
+          job: mail
+          app: postfix
+          service: mail
+          env: dev
+          __path__: /var/log/mail/*.log
+    pipeline_stages:
+      - include: /etc/promtail/pipelines/mail.yml
+
+  - job_name: vpn
+    static_configs:
+      - targets: ["localhost"]
+        labels:
+          job: vpn
+          app: openvpn
+          service: vpn
+          env: dev
+          __path__: /var/log/vpn/*.log
+    pipeline_stages:
+      - include: /etc/promtail/pipelines/vpn.yml

@@ -1,0 +1,11 @@
+filebeat.inputs:
+  - type: filestream
+    id: onec-reglog
+    paths:
+      - /var/log/onec/*.log
+    fields:
+      service: onec
+      env: dev
+
+output.logstash:
+  hosts: ["logstash:5044"]

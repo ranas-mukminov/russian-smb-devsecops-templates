@@ -1,0 +1,14 @@
+# Парсинг регистрационного журнала 1С. Извлекаем событие, пользователя, длительность, компьютер.
+- regex:
+    expression: "(?P<datetime>\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}:\d{2})\s+(?P<level>[A-Z]+)\s+(?P<event>[^;]+);user='(?P<user>[^']*)';computer='(?P<computer>[^']*)';sess='(?P<session>[^']*)';dur=(?P<duration_ms>\d+)"
+- labels:
+    user: '{{ .user }}'
+    level: '{{ .level }}'
+    service: onec
+    instance: '{{ .computer }}'
+- timestamp:
+    source: datetime
+    format: "02.01.2006 15:04:05"
+- duration:
+    source: duration_ms
+    unit: milliseconds

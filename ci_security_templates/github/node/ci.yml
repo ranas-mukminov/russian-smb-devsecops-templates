@@ -1,0 +1,58 @@
+name: Node CI Security
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install
+        run: npm ci
+      - name: Tests
+        run: npm test -- --runInBand || true
+
+  lint:
+    runs-on: ubuntu-latest
+    needs: tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install deps
+        run: npm ci
+      - name: ESLint
+        run: npx eslint .
+
+  deps-scan:
+    runs-on: ubuntu-latest
+    needs: tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: npm audit
+        run: npm audit --production || true
+
+  container-scan:
+    runs-on: ubuntu-latest
+    needs: [tests, lint, deps-scan]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t local/node-app:ci .
+      - name: Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: local/node-app:ci
+          format: table
+          exit-code: 0

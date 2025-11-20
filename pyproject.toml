@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "russian-smb-devsecops-templates"
+version = "0.1.0"
+description = "DevSecOps templates for Russian SMB: logging stack and secure CI/CD"
+authors = [{name = "run-as-daemon", email = "contact@run-as-daemon.ru"}]
+license = {text = "Apache-2.0"}
+requires-python = ">=3.10"
+dependencies = [
+  "pyyaml>=6.0",
+  "jsonschema>=4.17",
+  "pytest>=7.4",
+  "pip-audit>=2.5",
+  "bandit>=1.7",
+  "requests>=2.31"
+]
+
+[project.optional-dependencies]
+dev = [
+  "ruff>=0.1.8",
+  "black>=23.11",
+  "isort>=5.12"
+]
+
+[tool.ruff]
+line-length = 120
+extend-select = ["I"]
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+line_length = 120
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-q"
+python_files = ["test_*.py"]
+

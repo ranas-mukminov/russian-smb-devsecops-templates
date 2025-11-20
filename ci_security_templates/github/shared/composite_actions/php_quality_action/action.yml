@@ -1,0 +1,25 @@
+name: "PHP Quality (Bitrix-friendly)"
+description: "Runs composer install, lint and static analysis"
+input:
+  php-version:
+    description: "PHP version to use"
+    required: false
+    default: "8.1"
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-php@v4
+      with:
+        php-version: ${{ inputs.php-version }}
+        coverage: none
+    - name: Install Composer deps
+      run: composer install --no-interaction --prefer-dist
+      shell: bash
+    - name: PHP lint
+      run: find . -name "*.php" -not -path "./vendor/*" -print0 | xargs -0 -r php -l
+      shell: bash
+    - name: PHPStan/ Psalm
+      run: |
+        if [ -f vendor/bin/phpstan ]; then vendor/bin/phpstan analyse --memory-limit=512M; fi
+        if [ -f vendor/bin/psalm ]; then vendor/bin/psalm --alter --find-dead-code --no-cache; fi
+      shell: bash
