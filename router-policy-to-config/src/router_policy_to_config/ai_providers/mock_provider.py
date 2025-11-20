@@ -6,7 +6,7 @@ Returns deterministic responses for testing without actual AI API calls.
 
 from typing import Any, Dict, List, Optional
 
-from ai_providers.base import AIProvider
+from router_policy_to_config.ai_providers.base import AIProvider
 
 
 class MockProvider(AIProvider):

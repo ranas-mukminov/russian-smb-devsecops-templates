@@ -8,8 +8,8 @@ from typing import Optional
 
 import yaml
 
-from ai_providers.base import AIProvider
-from ai_providers.mock_provider import MockProvider
+from router_policy_to_config.ai_providers.base import AIProvider
+from router_policy_to_config.ai_providers.mock_provider import MockProvider
 
 
 class PolicyGenerator:
