@@ -1,0 +1,223 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: RouterOS Export Schema
+description: Schema for RouterOS configuration export format
+type: object
+properties:
+  interfaces:
+    type: object
+    description: Network interfaces
+    properties:
+      ethernet:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            mtu:
+              type: integer
+            disabled:
+              type: boolean
+      pppoe_client:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            interface:
+              type: string
+            user:
+              type: string
+            password:
+              type: string
+            disabled:
+              type: boolean
+      bridge:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            protocol_mode:
+              type: string
+            vlan_filtering:
+              type: boolean
+      vlan:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            vlan_id:
+              type: integer
+            interface:
+              type: string
+      wireless:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            ssid:
+              type: string
+            mode:
+              type: string
+            frequency:
+              type: string
+            channel_width:
+              type: string
+            security_profile:
+              type: string
+  ip:
+    type: object
+    properties:
+      addresses:
+        type: array
+        items:
+          type: object
+          properties:
+            address:
+              type: string
+            interface:
+              type: string
+            network:
+              type: string
+      dhcp_server:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            interface:
+              type: string
+            address_pool:
+              type: string
+            lease_time:
+              type: string
+      dhcp_server_network:
+        type: array
+        items:
+          type: object
+          properties:
+            address:
+              type: string
+            gateway:
+              type: string
+            dns_server:
+              type: string
+      pool:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            ranges:
+              type: string
+      firewall:
+        type: object
+        properties:
+          filter:
+            type: array
+            items:
+              type: object
+              properties:
+                chain:
+                  type: string
+                action:
+                  type: string
+                connection_state:
+                  type: string
+                protocol:
+                  type: string
+                src_address:
+                  type: string
+                dst_address:
+                  type: string
+                in_interface:
+                  type: string
+                out_interface:
+                  type: string
+                comment:
+                  type: string
+          nat:
+            type: array
+            items:
+              type: object
+              properties:
+                chain:
+                  type: string
+                action:
+                  type: string
+                out_interface:
+                  type: string
+                to_addresses:
+                  type: string
+                protocol:
+                  type: string
+                dst_port:
+                  type: integer
+      route:
+        type: array
+        items:
+          type: object
+          properties:
+            dst_address:
+              type: string
+            gateway:
+              type: string
+            distance:
+              type: integer
+  wireguard:
+    type: object
+    properties:
+      interfaces:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            listen_port:
+              type: integer
+            private_key:
+              type: string
+      peers:
+        type: array
+        items:
+          type: object
+          properties:
+            interface:
+              type: string
+            public_key:
+              type: string
+            allowed_address:
+              type: string
+            endpoint_address:
+              type: string
+            endpoint_port:
+              type: integer
+  system:
+    type: object
+    properties:
+      identity:
+        type: string
+      clock:
+        type: object
+        properties:
+          time_zone_name:
+            type: string
+      ntp_client:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          servers:
+            type: array
+            items:
+              type: string
