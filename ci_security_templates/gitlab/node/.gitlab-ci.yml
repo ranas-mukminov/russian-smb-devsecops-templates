@@ -1,0 +1,46 @@
+include:
+  - local: 'ci_security_templates/gitlab/shared/includes/dependency_scan.yml'
+  - local: 'ci_security_templates/gitlab/shared/includes/container_scan.yml'
+
+stages:
+  - test
+  - lint
+  - deps
+  - container_scan
+
+node_tests:
+  stage: test
+  image: node:18
+  script:
+    - npm ci
+    - npm test -- --runInBand || true
+
+node_lint:
+  stage: lint
+  needs: ["node_tests"]
+  image: node:18
+  script:
+    - npm ci
+    - npx eslint .
+
+node_deps_scan:
+  stage: deps
+  needs: ["node_tests"]
+  image: node:18
+  script:
+    - npm ci
+    - npm audit --production || true
+
+node_container_scan:
+  stage: container_scan
+  needs: ["node_tests", "node_lint", "node_deps_scan"]
+  image:
+    name: docker:24-cli
+    entrypoint: [""]
+  services:
+    - docker:24-dind
+  script:
+    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" .
+    - apk add --no-cache curl
+    - curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+    - trivy image --exit-code 0 --format table "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" || true
