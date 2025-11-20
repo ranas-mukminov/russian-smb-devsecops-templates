@@ -1,0 +1,17 @@
+# OpenWrt base firewall configuration for lab
+
+config defaults
+	option input 'ACCEPT'
+	option output 'ACCEPT'
+	option forward 'DROP'
+	option synflood_protect '1'
+
+config zone
+	option name 'mgmt'
+	list network 'mgmt'
+	option input 'ACCEPT'
+	option output 'ACCEPT'
+	option forward 'ACCEPT'
+
+# Note: This is a base configuration for the lab.
+# Generated policy configurations will be merged with this.

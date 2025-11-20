@@ -1,0 +1,44 @@
+meta:
+  name: home-office-router
+  description: Basic home office setup with PPPoE, main LAN, and guest WiFi
+  target:
+    vendor: routeros
+    version: v7
+
+wan:
+  type: pppoe
+  interface: ether1
+  username: "YOUR_ISP_USERNAME"
+  password_ref: "secret:pppoe_password"
+
+lans:
+  - name: main
+    subnet: 192.168.10.0/24
+    gateway: 192.168.10.1
+    dhcp:
+      enabled: true
+      range: 192.168.10.100-192.168.10.200
+      lease_time: 24h
+
+wifi:
+  - name: main-wifi
+    lan: main
+    ssid: "HomeOffice"
+    mode: ap
+    band: 2.4ghz
+    channel: 6
+    security:
+      encryption: wpa2-psk
+      password_ref: "secret:wifi_main_password"
+
+firewall:
+  default_policy: drop
+  rules:
+    - name: allow_lan_to_internet
+      from: [main]
+      to: [wan]
+      action: accept
+      comment: "Allow main LAN internet access"
+
+nat:
+  masquerade: true

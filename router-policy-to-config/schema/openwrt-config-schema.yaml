@@ -1,0 +1,276 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: OpenWrt UCI Config Schema
+description: Schema for OpenWrt UCI configuration format
+type: object
+properties:
+  network:
+    type: object
+    description: /etc/config/network
+    properties:
+      interfaces:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            proto:
+              type: string
+              enum: [static, dhcp, pppoe, none]
+            device:
+              type: string
+            ipaddr:
+              type: string
+            netmask:
+              type: string
+            gateway:
+              type: string
+            dns:
+              type: array
+              items:
+                type: string
+            username:
+              type: string
+            password:
+              type: string
+            mtu:
+              type: integer
+      devices:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            type:
+              type: string
+              enum: [bridge, vlan, ethernet]
+            ports:
+              type: array
+              items:
+                type: string
+            vid:
+              type: integer
+      routes:
+        type: array
+        items:
+          type: object
+          properties:
+            interface:
+              type: string
+            target:
+              type: string
+            netmask:
+              type: string
+            gateway:
+              type: string
+  wireless:
+    type: object
+    description: /etc/config/wireless
+    properties:
+      radio:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            type:
+              type: string
+            channel:
+              oneOf:
+                - type: integer
+                - type: string
+            hwmode:
+              type: string
+              enum: [11b, 11g, 11a, 11ac, 11ax]
+            htmode:
+              type: string
+            country:
+              type: string
+            disabled:
+              type: boolean
+      wifi_iface:
+        type: array
+        items:
+          type: object
+          properties:
+            device:
+              type: string
+            mode:
+              type: string
+              enum: [ap, sta, mesh, adhoc, monitor]
+            ssid:
+              type: string
+            network:
+              type: string
+            encryption:
+              type: string
+              enum: [none, psk, psk2, psk-mixed, psk2+ccmp, sae, sae-mixed]
+            key:
+              type: string
+            hidden:
+              type: boolean
+            isolate:
+              type: boolean
+            disabled:
+              type: boolean
+  firewall:
+    type: object
+    description: /etc/config/firewall
+    properties:
+      defaults:
+        type: object
+        properties:
+          input:
+            type: string
+            enum: [ACCEPT, DROP, REJECT]
+          output:
+            type: string
+            enum: [ACCEPT, DROP, REJECT]
+          forward:
+            type: string
+            enum: [ACCEPT, DROP, REJECT]
+          synflood_protect:
+            type: boolean
+      zones:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            input:
+              type: string
+              enum: [ACCEPT, DROP, REJECT]
+            output:
+              type: string
+              enum: [ACCEPT, DROP, REJECT]
+            forward:
+              type: string
+              enum: [ACCEPT, DROP, REJECT]
+            masq:
+              type: boolean
+            mtu_fix:
+              type: boolean
+            network:
+              type: array
+              items:
+                type: string
+      forwardings:
+        type: array
+        items:
+          type: object
+          properties:
+            src:
+              type: string
+            dest:
+              type: string
+      rules:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            src:
+              type: string
+            dest:
+              type: string
+            proto:
+              oneOf:
+                - type: string
+                - type: array
+                  items:
+                    type: string
+            src_ip:
+              type: string
+            dest_ip:
+              type: string
+            src_port:
+              oneOf:
+                - type: integer
+                - type: string
+            dest_port:
+              oneOf:
+                - type: integer
+                - type: string
+            target:
+              type: string
+              enum: [ACCEPT, DROP, REJECT]
+            family:
+              type: string
+              enum: [ipv4, ipv6, any]
+      redirects:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            src:
+              type: string
+            dest:
+              type: string
+            proto:
+              oneOf:
+                - type: string
+                - type: array
+                  items:
+                    type: string
+            src_dport:
+              oneOf:
+                - type: integer
+                - type: string
+            dest_ip:
+              type: string
+            dest_port:
+              oneOf:
+                - type: integer
+                - type: string
+            target:
+              type: string
+  dhcp:
+    type: object
+    description: /etc/config/dhcp
+    properties:
+      dnsmasq:
+        type: object
+        properties:
+          domainneeded:
+            type: boolean
+          boguspriv:
+            type: boolean
+          localise_queries:
+            type: boolean
+          local:
+            type: string
+          domain:
+            type: string
+          expandhosts:
+            type: boolean
+          authoritative:
+            type: boolean
+          readethers:
+            type: boolean
+          leasefile:
+            type: string
+          resolvfile:
+            type: string
+      dhcp:
+        type: array
+        items:
+          type: object
+          properties:
+            interface:
+              type: string
+            start:
+              type: integer
+            limit:
+              type: integer
+            leasetime:
+              type: string
+            dhcpv6:
+              type: string
+            ra:
+              type: string

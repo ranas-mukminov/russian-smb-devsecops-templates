@@ -1,0 +1,53 @@
+# Test firewall scenarios
+
+scenarios:
+  - name: block_wan_to_router
+    description: Verify WAN cannot access router management
+    type: firewall
+    source: wan
+    target: router_management
+    ports: [22, 8291, 80]
+    expected: blocked
+    tests:
+      - nmap -p 22,8291,80 router_ip
+      - telnet router_ip 22
+
+  - name: allow_lan_to_router
+    description: Verify LAN can access router management
+    type: firewall
+    source: main_lan
+    target: router_management
+    ports: [22, 8291, 80]
+    expected: allowed
+    tests:
+      - telnet router_ip 22
+      - curl http://router_ip
+
+  - name: guest_isolation_firewall
+    description: Verify firewall blocks guest to main LAN
+    type: firewall
+    source: guest_lan
+    target: main_lan_subnet
+    expected: blocked
+    tests:
+      - ping -c 2 main_lan_host
+      - nmap -p 1-1000 main_lan_host
+
+  - name: port_forward_works
+    description: Verify port forwarding from WAN
+    type: nat
+    source: wan
+    target: forwarded_service
+    port: 8080
+    expected: forwarded
+    tests:
+      - curl http://wan_ip:8080
+      - telnet wan_ip 8080
+
+  - name: established_connections_allowed
+    description: Verify established connections are allowed
+    type: firewall
+    source: any
+    target: any
+    state: established
+    expected: allowed

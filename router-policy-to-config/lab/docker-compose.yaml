@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  # Test lab placeholder - full implementation requires RouterOS CHR and OpenWrt images
+  # Note: These are placeholders for the lab structure
+  
+  # RouterOS CHR node (requires official CHR image)
+  # Uncomment when CHR image is available
+  # routeros:
+  #   container_name: lab-routeros
+  #   image: routeros-chr:latest
+  #   privileged: true
+  #   networks:
+  #     - lab-mgmt
+  #     - lab-wan
+  #   ports:
+  #     - "8728:8728"  # API
+  #     - "8291:8291"  # Winbox
+  #   volumes:
+  #     - routeros-data:/opt/routeros
+  
+  # OpenWrt node (requires OpenWrt image)
+  # Uncomment when OpenWrt image is available
+  # openwrt:
+  #   container_name: lab-openwrt
+  #   image: openwrt:latest
+  #   privileged: true
+  #   networks:
+  #     - lab-mgmt
+  #     - lab-wan
+  #   ports:
+  #     - "8080:80"  # LuCI
+  #   volumes:
+  #     - openwrt-data:/etc/config
+  
+  # Test client for connectivity tests
+  test-client:
+    container_name: lab-test-client
+    image: alpine:latest
+    command: tail -f /dev/null
+    networks:
+      - lab-mgmt
+    volumes:
+      - ./tests:/tests:ro
+
+networks:
+  lab-mgmt:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+  
+  lab-wan:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/24
+
+volumes:
+  routeros-data:
+  openwrt-data:
+
+# Note: This is a placeholder configuration
+# Full lab setup requires:
+# 1. RouterOS CHR image (official from MikroTik, lab license)
+# 2. OpenWrt image (official from OpenWrt project)
+# 3. Network topology configuration
+# 4. Test automation scripts

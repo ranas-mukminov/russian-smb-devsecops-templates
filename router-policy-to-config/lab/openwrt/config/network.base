@@ -1,0 +1,17 @@
+# OpenWrt base network configuration for lab
+
+config interface 'loopback'
+	option device 'lo'
+	option proto 'static'
+	option ipaddr '127.0.0.1'
+	option netmask '255.255.255.0'
+
+config interface 'mgmt'
+	option device 'eth0'
+	option proto 'static'
+	option ipaddr '172.20.0.10'
+	option netmask '255.255.255.0'
+	option gateway '172.20.0.1'
+
+# Note: This is a base configuration for the lab.
+# Generated policy configurations will be imported on top of this.

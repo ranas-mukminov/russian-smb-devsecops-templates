@@ -1,0 +1,42 @@
+# Test connectivity scenarios
+
+scenarios:
+  - name: main_lan_internet
+    description: Verify main LAN has internet access
+    type: connectivity
+    source: main_lan_client
+    target: 8.8.8.8
+    expected: success
+    tests:
+      - ping -c 4 8.8.8.8
+      - curl -I http://example.com
+
+  - name: guest_lan_internet
+    description: Verify guest LAN has internet access
+    type: connectivity
+    source: guest_lan_client
+    target: 8.8.8.8
+    expected: success
+    tests:
+      - ping -c 4 8.8.8.8
+      - curl -I http://example.com
+
+  - name: guest_to_main_blocked
+    description: Verify guest cannot reach main LAN
+    type: isolation
+    source: guest_lan_client
+    target: main_lan_gateway
+    expected: failure
+    tests:
+      - ping -c 4 -W 2 192.168.10.1
+      - telnet 192.168.10.1 22
+
+  - name: vpn_connectivity
+    description: Verify VPN tunnel works
+    type: vpn
+    source: vpn_client
+    target: main_lan_gateway
+    expected: success
+    tests:
+      - ping -c 4 192.168.10.1
+      - traceroute 192.168.10.1
